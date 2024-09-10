@@ -74,7 +74,8 @@ app.post('/login', validateLogin, (req, res, next) => {
         process.env.JWT_SECRET,
         { expiresIn: '30 days' }
       );
-      return res.json({ token: token, profile: user });
+      console.log(user);
+      return res.json({ token: token, profile: JSON.strigify(user) });
     })(req,res,next);
   });
 
