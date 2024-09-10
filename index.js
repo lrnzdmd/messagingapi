@@ -75,7 +75,7 @@ app.post('/login', validateLogin, (req, res, next) => {
         { expiresIn: '30 days' }
       );
       console.log(user);
-      return res.json({ token: token, profile: JSON.strigify(user) });
+      return res.json({ token: token, profile: JSON.stringify(user) });
     })(req,res,next);
   });
 
