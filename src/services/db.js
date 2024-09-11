@@ -22,6 +22,35 @@ async function getUserList(userId) {
   }
 }
 
+async function getChatList(userId) {
+  try {
+    const userChats = await prisma.chat.findMany({
+      where: {
+        participants: {
+          some: {
+            userId: userId
+          }
+        }
+      },
+      include: {
+        participants: true, 
+        messages: {
+          orderBy: {
+            sentAt: 'desc' 
+          },
+          take: 1 
+        },
+        createdByUser: true 
+      }
+    });
+
+    return userChats;
+  } catch (error) {
+    console.error('Error getting chat list', error);
+
+  }
+}
+
 async function getUserByUsername(username) {
     try {
         const user = await prisma.user.findUnique({
@@ -81,9 +110,70 @@ async function createUserWithProfile(userName, password, avatarUrl, fullName, ab
     }
   }
 
+  async function getDirectChat(user1,user2) {
+    try {
+      const directChat = await prisma.chat.findFirst({
+        where: {
+          type: 'direct',
+          participants: {
+            some: {
+              userId: user1
+            },
+            some: {
+              userId: user2
+            }
+          }
+        },
+        include: {
+          participants: true
+        }
+      });
+
+      return directChat;
+    } catch (error) {
+      console.error('Error fetching chat:', error);
+    }
+  }
+
+  async function newDirectChat(userId1, userId2, message) {
+    try {
+      const newChat = await prisma.chat.create({
+        data: {
+          type: 'direct',
+          createdBy: userId1,
+          participants: {
+            create: [
+              { userId: userId1 },
+              { userId: userId2 },
+            ]
+          },
+          messages: {
+            create: {
+              senderId: userId1,
+              text: message,
+            }
+          }
+        },
+        include: {
+          participants: true,
+          messages: true,
+        }
+      });
+    
+      return newChat;
+
+    } catch (error) {
+      console.error('Error creating chat:', error);
+      res.status(500).json({ error: 'Error creating chat' });
+    }
+  }
+
   module.exports = {
     createUserWithProfile,
     getUserByUsername,
     getUserById,
-    getUserList
+    getUserList,
+    getDirectChat,
+    newDirectChat,
+    getChatList
   }

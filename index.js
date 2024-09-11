@@ -65,8 +65,31 @@ app.get('/userlist', verifyToken, async (req, res) => {
     console.error('Error fetching user list', error);
       return res.status(500).json({errorMsg:'Error fetching user list.', error});
   }
-})
+});
 
+app.get('/chatlist', verifyToken, async (req, res) => {
+  try {
+    const chatlist = await db.getChatList(req.token.id);
+    res.status(200).json({ chats: chatlist })
+  } catch (error) {
+    console.error('Error fetching chat list', error);
+      return res.status(500).json({errorMsg:'Error fetching chat list.', error});
+  }
+});
+
+app.post('/new/chat/:user2', verifyToken, async (req, res) => {
+  const user1Id = req.token.id;
+  const user2Id = parseInt(req.params.user2);
+  try {
+    const directChat = await db.getDirectChat(user1Id, user2Id);
+    if (!directChat) {
+      const newChat = await db.newDirectChat(user1Id,user2Id, req.body.message);
+      res.status(200).json({ newChat: newChat });
+    }
+  } catch (error) {
+    
+  }
+})
 
 
 // Login and Register routes
