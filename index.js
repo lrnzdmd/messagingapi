@@ -77,6 +77,26 @@ app.get('/chatlist', verifyToken, async (req, res) => {
   }
 });
 
+app.get('/chat/:chatId', verifyToken, async (req, res) => {
+  const chatId = parseInt(req.params.chatId);
+  if (isNaN(chatId)) {
+    return res.status(400).json({ errorMsg: 'Invalid chat ID' });
+  }
+  try {
+    const chat = await db.getChatById(chatId);
+    if (!chat) {
+      return res.status(400).json({ errorMsg: 'Invalid chat ID' });
+    }
+    if (!chat.participants.some(participant => participant.userId === req.token.id)) {
+      return res.status(403).json({message:'Forbidden'});
+    }
+    return res.status(200).json({chat:chat});
+  } catch (error) {
+    console.error('Error fetching chat', error);
+    return res.status(500).json({errorMsg:'Error fetching chat'});
+  }
+})
+
 app.post('/new/chat/:user2', verifyToken, async (req, res) => {
   const user1Id = req.token.id;
   const user2Id = parseInt(req.params.user2);
