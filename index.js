@@ -84,10 +84,14 @@ app.post('/new/chat/:user2', verifyToken, async (req, res) => {
     const directChat = await db.getDirectChat(user1Id, user2Id);
     if (!directChat) {
       const newChat = await db.newDirectChat(user1Id,user2Id, req.body.message);
-      res.status(200).json({ newChat: newChat });
+      return res.status(200).json({ newMessage: newChat.messages[0] });
+    } else {
+      const newMessage = await db.newMessage(directChat.id,user1Id,req.body.message);
+      return res.status(200).json({ newMessage: newMessage });
+
     }
   } catch (error) {
-    
+    return res.status(500).json({errorMsg:'Error creating new chat.', error});
   }
 })
 

@@ -168,6 +168,28 @@ async function createUserWithProfile(userName, password, avatarUrl, fullName, ab
     }
   }
 
+  async function newMessage(chatId, senderId, text) {
+    try {
+      const newMessage = await prisma.message.create({
+        data: {
+          chatId: chatId,    
+          senderId: senderId, 
+          text: text,         
+        },
+        include: {
+          sender: true, 
+          chat: true,   
+        }
+      });
+    
+      console.log('New message crated:', newMessage);
+      return newMessage;
+    } catch (error) {
+      console.error('Error creating message:', error);
+  res.status(500).json({ error: 'Error creating message' });
+    }
+  }
+
   module.exports = {
     createUserWithProfile,
     getUserByUsername,
@@ -175,5 +197,6 @@ async function createUserWithProfile(userName, password, avatarUrl, fullName, ab
     getUserList,
     getDirectChat,
     newDirectChat,
-    getChatList
+    getChatList,
+    newMessage,
   }
