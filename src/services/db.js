@@ -2,6 +2,26 @@ const { PrismaClient }  = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
+async function getUserList(userId) {
+  try {
+    const users = await prisma.user.findMany({
+      where: {
+        NOT: {
+          id: userId
+        }
+      },
+      include: {
+        profile: true,
+      }
+    });
+    
+    return users;
+  } catch (error) {
+    console.error('Error fetching users list:', error);
+    throw error;
+  }
+}
+
 async function getUserByUsername(username) {
     try {
         const user = await prisma.user.findUnique({
@@ -64,5 +84,6 @@ async function createUserWithProfile(userName, password, avatarUrl, fullName, ab
   module.exports = {
     createUserWithProfile,
     getUserByUsername,
-    getUserById
+    getUserById,
+    getUserList
   }

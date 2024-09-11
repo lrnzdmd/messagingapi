@@ -57,6 +57,16 @@ app.use((req, res, next) => {
 });
 
 
+app.get('/userlist', verifyToken, async (req, res) => {
+  try {
+    const userslist = await db.getUserList(req.token.id);
+    res.status(200).json({ users: userslist })
+  } catch (error) {
+    console.error('Error fetching user list', error);
+      return res.status(500).json({errorMsg:'Error fetching user list.', error});
+  }
+})
+
 
 
 // Login and Register routes
