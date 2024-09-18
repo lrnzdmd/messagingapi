@@ -101,6 +101,7 @@ app.post('/new/chat/:user2', verifyToken, async (req, res) => {
   const user1Id = req.token.id;
   const user2Id = parseInt(req.params.user2);
   try {
+    console.log('user id 1, user id 2', user1Id,user2Id)
     let directChat = await db.getDirectChat(user1Id, user2Id);
     console.log('looked for directchat: ', directChat);
     if (!directChat) {
@@ -207,6 +208,7 @@ app.post('/register', validateRegistration, async (req, res) => {
   
     jwt.verify(bearerToken, process.env.JWT_SECRET, (err, decodedToken) => {
       if (err) {
+        console.log('token verification failed')
         return res.status(403);
       }
   
