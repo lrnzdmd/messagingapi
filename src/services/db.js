@@ -136,12 +136,17 @@ async function createUserWithProfile(userName, password, avatarUrl, fullName, ab
     }
   }
 
-  async function getDirectChat(user1,user2) {
+  async function getDirectChat(user1, user2) {
     try {
       const directChat = await prisma.chat.findFirst({
         where: {
           type: 'direct',
           participants: {
+            every: {
+              userId: {
+                in: [user1, user2]
+              }
+            },
             some: {
               userId: user1
             },
@@ -154,8 +159,13 @@ async function createUserWithProfile(userName, password, avatarUrl, fullName, ab
           participants: true
         }
       });
-
-      return directChat;
+  
+    
+      if (directChat && directChat.participants.length === 2) {
+        return directChat;
+      } else {
+        return null;
+      }
     } catch (error) {
       console.error('Error fetching chat:', error);
     }
