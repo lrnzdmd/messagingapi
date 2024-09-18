@@ -116,6 +116,7 @@ app.post('/new/chat/:user2', verifyToken, async (req, res) => {
 })
 
 
+
 // Login and Register routes
 
 app.post('/login', validateLogin, (req, res, next) => {
