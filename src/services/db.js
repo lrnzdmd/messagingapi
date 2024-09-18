@@ -143,6 +143,7 @@ async function createUserWithProfile(userName, password, avatarUrl, fullName, ab
           },
           include: {
             participants: true,
+            messages: true,
           },
         });
 
