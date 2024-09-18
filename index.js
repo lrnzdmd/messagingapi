@@ -115,6 +115,20 @@ app.post('/new/chat/:user2', verifyToken, async (req, res) => {
   }
 })
 
+app.post('/new/message/:chatid', verifyToken, async (req, res) => {
+  const chatId = path.parseInt(req.params.chatid);
+  const userId = req.token.id;
+  try {
+    const chat = await db.getChatById(chatId);
+    if (chat.participants.some(part => part.userId === userId)) {
+      const newMessage = await db.newMessage(chatId, userId, req.body.message);
+      return res.status(200).json({ newMessage: newMessage });
+    }
+  } catch (error) {
+    return res.status(500).json({errorMsg:'Error creating new message.', error});
+  }
+})
+
 
 
 // Login and Register routes
