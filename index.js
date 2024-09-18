@@ -116,7 +116,7 @@ app.post('/new/chat/:user2', verifyToken, async (req, res) => {
 })
 
 app.post('/new/message/:chatid', verifyToken, async (req, res) => {
-  const chatId = path.parseInt(req.params.chatid);
+  const chatId = parseInt(req.params.chatid);
   const userId = req.token.id;
   try {
     const chat = await db.getChatById(chatId);
