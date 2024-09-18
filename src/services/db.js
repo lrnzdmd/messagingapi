@@ -33,23 +33,49 @@ async function getChatList(userId) {
         }
       },
       include: {
-        participants: true, 
+        participants: {
+          include: {
+            user: {
+              select: {
+                username: true,
+                profile: {
+                  select: {
+                    fullName: true,
+                    avatar: true
+                  }
+                }
+              }
+            }
+          }
+        },
         messages: {
           orderBy: {
-            sentAt: 'desc' 
+            sentAt: 'desc'
           },
-          take: 1 
-        },
-        createdByUser: true 
+          take: 1,
+          include: {
+            sender: {
+              select: {
+                username: true,
+                profile: {
+                  select: {
+                    fullName: true,
+                    avatar: true
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     });
-
     return userChats;
   } catch (error) {
-    console.error('Error getting chat list', error);
-
+    console.error('Error fetching chat list:', error);
   }
 }
+
+
 
 async function getUserByUsername(username) {
     try {
@@ -137,27 +163,43 @@ async function createUserWithProfile(userName, password, avatarUrl, fullName, ab
 
   async function getChatById(chatId) {
     try {
-      const chat = await prisma.chat.findUnique({
-        where: { id: chatId },
-        include: {
-          participants: {
+        const chat = await prisma.chat.findUnique({
+            where: {
+                id: chatId,
+            },
             include: {
-              user: {
-                include: {
-                  profile: true 
-                }
-              }
-            }
-          }
-        }
-      });
-  
-      console.log(JSON.stringify(chat, null, 2)); // Per vedere la struttura della risposta
-      return chat;
+                createdByUser: {
+                    include: {
+                        profile: true,
+                    },
+                },
+                participants: {
+                    include: {
+                        user: {
+                            include: {
+                                profile: true,
+                            },
+                        },
+                    },
+                },
+                messages: {
+                    include: {
+                        sender: {
+                            include: {
+                                profile: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        return chat;
     } catch (error) {
-      console.error('Error fetching chat:', error);
+        console.error('Error fetching chat:', error);
     }
-  }
+}
+  
+  
 
 
   async function newDirectChat(userId1, userId2, message) {
