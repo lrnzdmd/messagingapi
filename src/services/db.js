@@ -137,22 +137,41 @@ async function createUserWithProfile(userName, password, avatarUrl, fullName, ab
 
   async function getChatById(chatId) {
     try {
-      const chat = await prisma.chat.findUnique({ 
-          where: {
-            id: chatId,
+      const chat = await prisma.chat.findUnique({
+        where: {
+          id: chatId,
+        },
+        include: {
+          participants: {
+            include: {
+              user: {
+                include: {
+                  profile: true
+                }
+              }
+            }
           },
-          include: {
-            participants: true,
-            messages: true,
+          messages: {
+            include: {
+              sender: {
+                include: {
+                  profile: true
+                }
+              }
+            }
           },
-        });
-
-        return chat;
+          createdByUser: {
+            include: {
+              profile: true
+            }
+          }
+        },
+      });
+      return chat;
     } catch (error) {
       console.error('Error fetching chat:', error);
     }
   }
-
   async function newDirectChat(userId1, userId2, message) {
     try {
       const newChat = await prisma.chat.create({

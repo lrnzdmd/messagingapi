@@ -101,10 +101,10 @@ app.post('/new/chat/:user2', verifyToken, async (req, res) => {
   const user1Id = req.token.id;
   const user2Id = parseInt(req.params.user2);
   try {
-    const directChat = await db.getDirectChat(user1Id, user2Id);
+    let directChat = await db.getDirectChat(user1Id, user2Id);
     if (!directChat) {
-      const newChat = await db.newDirectChat(user1Id,user2Id, req.body.message);
-      return res.status(200).json({ newMessage: newChat.messages[0] });
+      directChat = await db.newDirectChat(user1Id,user2Id, req.body.message);
+      return res.status(200).json({ newMessage: directChat.messages[0] });
     } else {
       const newMessage = await db.newMessage(directChat.id,user1Id,req.body.message);
       return res.status(200).json({ newMessage: newMessage });
