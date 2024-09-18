@@ -102,8 +102,11 @@ app.post('/new/chat/:user2', verifyToken, async (req, res) => {
   const user2Id = parseInt(req.params.user2);
   try {
     let directChat = await db.getDirectChat(user1Id, user2Id);
+    console.log('looked for directchat: ', directChat);
     if (!directChat) {
+      console.log('did not find direct chat')
       directChat = await db.newDirectChat(user1Id,user2Id, req.body.message);
+      console.log('created new directchat: ', directChat)
       return res.status(200).json({ newMessage: directChat.messages[0] });
     } else {
       const newMessage = await db.newMessage(directChat.id,user1Id,req.body.message);
