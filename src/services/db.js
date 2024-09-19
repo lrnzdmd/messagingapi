@@ -75,6 +75,24 @@ async function getChatList(userId) {
   }
 }
 
+async function updateProfile(userId, fullName, aboutMe) {
+  try {
+    const updatedProfile = await prisma.profile.update({
+    where: {
+      userId: userId,
+    },
+    data: {
+      fullName: fullName,
+      aboutMe: aboutMe,
+    },
+  });
+  return updatedProfile;
+  } catch (error) {
+    console.error('Error updating profile:', error);
+  }
+  
+}
+
 
 
 async function getUserByUsername(username) {
@@ -277,4 +295,5 @@ async function createUserWithProfile(userName, password, avatarUrl, fullName, ab
     newDirectChat,
     getChatList,
     newMessage,
+    updateProfile,
   }

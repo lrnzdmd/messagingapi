@@ -131,6 +131,17 @@ app.post('/new/message/:chatid', verifyToken, async (req, res) => {
   } catch (error) {
     return res.status(500).json({errorMsg:'Error creating new message.', error});
   }
+});
+
+app.patch('/updateprofile', verifyToken, async (req, res) => {
+  try {
+    const updatedProfile = await db.updateProfile(req.token.id, req.body.fullName, req.body.aboutMe);
+    if (updatedProfile) {
+      return res.status(200).json({ updatedProfile: updatedProfile});
+    }
+  } catch (error) {
+    return res.status(500).json({errorMsg:'Error updating profile.', error});
+  }
 })
 
 
